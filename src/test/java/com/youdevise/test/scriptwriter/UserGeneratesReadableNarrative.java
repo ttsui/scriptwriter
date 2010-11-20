@@ -22,59 +22,59 @@ import static org.hamcrest.Matchers.containsString;
 
 public class UserGeneratesReadableNarrative {
 
-    private File codeDir;
+    private File narrativeTestsDirectory;
 
     @Before public void createCodeDirectory() throws IOException {
-        codeDir = File.createTempFile("narrative-code", Long.toString(System.nanoTime()));
+        narrativeTestsDirectory = File.createTempFile("narrative-tests", Long.toString(System.nanoTime()));
         
-        if (!codeDir.delete() || !codeDir.mkdir()) {
-            throw new IOException("Failed to create code directory: " + codeDir.getAbsolutePath()); 
+        if (!narrativeTestsDirectory.delete() || !narrativeTestsDirectory.mkdir()) {
+            throw new IOException("Failed to create code directory: " + narrativeTestsDirectory.getAbsolutePath()); 
         }
     }
     
     @After public void clean() {
-        codeDir.delete();
+        narrativeTestsDirectory.delete();
     }
     
     @Test public void
     generatesHtmlFromNarrativeStyleTest() {
-        
-         AuthorActor author = new AuthorActor();
-         Given.the(author).was_able_to(write_a_simple_narrative_test_in(codeDir));
+         ScriptwriterActor writer = new ScriptwriterActor();
          
-         When.the(author).attempts_to(produce_a_human_readable_version_of_the_test());
+         Given.the(writer).was_able_to(source_narrative_tests_in(narrativeTestsDirectory));
          
-         Then.the(author).expects_that(the_output())
+         When.the(writer).attempts_to(write_a_script_based_on_the_tests());
+         
+         Then.the(writer).expects_that(the_script())
                          .should_be(a_readable_form_of_the_narrative());
     }
     
-    private Action<ScriptWriter, AuthorActor> write_a_simple_narrative_test_in(final File codeDir) {
-        return new Action<ScriptWriter, AuthorActor>() {
+    private Action<Scriptwriter, ScriptwriterActor> source_narrative_tests_in(final File directory) {
+        return new Action<Scriptwriter, ScriptwriterActor>() {
             @Override
-            public void performFor(AuthorActor actor) {
-                actor.writeSomeCodeIn(codeDir);
+            public void performFor(ScriptwriterActor writer) {
+                writer.sourcesNarrativeTestsIn(directory);
             }
         };
     }
 
-    private Action<ScriptWriter, AuthorActor> produce_a_human_readable_version_of_the_test() {
-        return new Action<ScriptWriter, AuthorActor>() {
+    private Action<Scriptwriter, ScriptwriterActor> write_a_script_based_on_the_tests() {
+        return new Action<Scriptwriter, ScriptwriterActor>() {
             @Override
-            public void performFor(AuthorActor author) {
-                ScriptWriter.main(new String[] { author.getCodePath() });
+            public void performFor(ScriptwriterActor writer) {
+                Scriptwriter.main(new String[] { writer.getSourceOfNarrativeTests() });
             }
         };
     }
 
-    private Extractor<String, AuthorActor> the_output() {
-        return new Extractor<String, AuthorActor>() {
+    private Extractor<String, ScriptwriterActor> the_script() {
+        return new Extractor<String, ScriptwriterActor>() {
             @Override
-            public String grabFor(AuthorActor author) {
-                if (!author.getOutputPath().exists()) {
+            public String grabFor(ScriptwriterActor writer) {
+                if (!writer.getOutputPath().exists()) {
                    throw new RuntimeException("Output directory was not created.");
                 }
                 
-                File firstOutput = FileUtils.iterateFiles(author.getOutputPath(), new String[] { "html" }, false).next();
+                File firstOutput = FileUtils.iterateFiles(writer.getOutputPath(), new String[] { "html" }, false).next();
                 
                 try {
                     return FileUtils.readFileToString(firstOutput);
@@ -93,43 +93,43 @@ public class UserGeneratesReadableNarrative {
                      containsString("the operator was able to"));
     }
 
-    public static class AuthorActor implements Actor<ScriptWriter, AuthorActor> {
-        private File codeDirectory;
+    public static class ScriptwriterActor implements Actor<Scriptwriter, ScriptwriterActor> {
+        private File testsDirectory;
 
         @Override
-        public ScriptWriter tool() {
+        public Scriptwriter tool() {
             return null;
         }
 
         public File getOutputPath() {
-            return new File(codeDirectory, "output");
+            return new File(testsDirectory, "output");
         }
 
-        public String getCodePath() {
-            return codeDirectory.getAbsolutePath();
+        public String getSourceOfNarrativeTests() {
+            return testsDirectory.getAbsolutePath();
         }
 
-        public void writeSomeCodeIn(File codeDir) {
-            this.codeDirectory = codeDir;
+        public void sourcesNarrativeTestsIn(File directory) {
+            this.testsDirectory = directory;
             try {
-                FileUtils.copyFileToDirectory(new File("src/test/fixtures/BasicArithmeticTest.java"), codeDir);
+                FileUtils.copyFileToDirectory(new File("src/test/fixtures/BasicArithmeticTest.java"), directory);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
         @Override
-        public void perform(Action<ScriptWriter, AuthorActor> action) {
+        public void perform(Action<Scriptwriter, ScriptwriterActor> action) {
             action.performFor(this);
         }
 
         @Override
-        public <DATA> DATA grabUsing(Extractor<DATA, AuthorActor> extractor) {
+        public <DATA> DATA grabUsing(Extractor<DATA, ScriptwriterActor> extractor) {
             return extractor.grabFor(this);
         }
     }
     
-    public static class ScriptWriter {
+    public static class Scriptwriter {
         public static void main(String[] args) {
             File outputDir = new File(args[0], "output");
             outputDir.mkdir();
