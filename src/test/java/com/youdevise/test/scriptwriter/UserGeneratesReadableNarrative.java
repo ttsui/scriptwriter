@@ -12,8 +12,6 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.Matcher;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.allOf;
@@ -22,25 +20,11 @@ import static org.hamcrest.Matchers.containsString;
 
 public class UserGeneratesReadableNarrative {
 
-    private File narrativeTestsDirectory;
-
-    @Before public void createCodeDirectory() throws IOException {
-        narrativeTestsDirectory = File.createTempFile("narrative-tests", Long.toString(System.nanoTime()));
-        
-        if (!narrativeTestsDirectory.delete() || !narrativeTestsDirectory.mkdir()) {
-            throw new IOException("Failed to create code directory: " + narrativeTestsDirectory.getAbsolutePath()); 
-        }
-    }
-    
-    @After public void clean() {
-        narrativeTestsDirectory.delete();
-    }
-    
     @Test public void
     generatesHtmlFromNarrativeStyleTest() {
          ScriptwriterActor writer = new ScriptwriterActor();
          
-         Given.the(writer).was_able_to(source_narrative_tests_in(narrativeTestsDirectory));
+         Given.the(writer).was_able_to(source_narrative_tests_in("src/test/fixtures/"));
          
          When.the(writer).attempts_to(write_a_script_based_on_the_tests());
          
@@ -48,7 +32,7 @@ public class UserGeneratesReadableNarrative {
                          .should_be(a_readable_form_of_the_narrative());
     }
     
-    private Action<Scriptwriter, ScriptwriterActor> source_narrative_tests_in(final File directory) {
+    private Action<Scriptwriter, ScriptwriterActor> source_narrative_tests_in(final String directory) {
         return new Action<Scriptwriter, ScriptwriterActor>() {
             @Override
             public void performFor(ScriptwriterActor writer) {
@@ -94,7 +78,7 @@ public class UserGeneratesReadableNarrative {
     }
 
     public static class ScriptwriterActor implements Actor<Scriptwriter, ScriptwriterActor> {
-        private File testsDirectory;
+        private String narrativeTestsDir;
 
         @Override
         public Scriptwriter tool() {
@@ -102,20 +86,15 @@ public class UserGeneratesReadableNarrative {
         }
 
         public File getOutputPath() {
-            return new File(testsDirectory, "output");
+            return new File(narrativeTestsDir, "output");
         }
 
         public String getSourceOfNarrativeTests() {
-            return testsDirectory.getAbsolutePath();
+            return narrativeTestsDir;
         }
 
-        public void sourcesNarrativeTestsIn(File directory) {
-            this.testsDirectory = directory;
-            try {
-                FileUtils.copyFileToDirectory(new File("src/test/fixtures/BasicArithmeticTest.java"), directory);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        public void sourcesNarrativeTestsIn(String directory) {
+            this.narrativeTestsDir = directory;
         }
 
         @Override
