@@ -107,18 +107,4 @@ public class UserGeneratesReadableNarrative {
             return extractor.grabFor(this);
         }
     }
-    
-    public static class Scriptwriter {
-        public static void main(String[] args) {
-            File outputDir = new File(args[0], "output");
-            outputDir.mkdir();
-            
-            File output = new File(outputDir, "t.html");
-            try {
-                FileUtils.writeStringToFile(output, "Hello");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }
