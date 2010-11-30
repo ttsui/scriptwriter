@@ -6,7 +6,16 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 
 public class Scriptwriter {
-    public static void main(String[] args) {
+    public Scriptwriter(NarrativeTestsReader narrativeTestsReader) {
+		// TODO Auto-generated constructor stub
+	}
+
+	public void generate(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void main(String[] args) {
         File outputDir = new File(args[0], "output");
         outputDir.mkdir();
         
