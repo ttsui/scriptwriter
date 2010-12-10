@@ -1,18 +1,44 @@
 package com.youdevise.test.scriptwriter;
 
+import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Test;
+
+import static java.util.Arrays.asList;
 
 public class ScriptwriterTest {
 	private final Mockery context = new Mockery();
 	
+	private TestScanner scanner = context.mock(TestScanner.class);
+	private ScriptPrinter printer = context.mock(ScriptPrinter.class);
+	
 	@Test public void
-	readsAllNarrativeTestsFromGivenDirectory() {
-		NarrativeTestsReader narrativeTestsReader = context.mock(NarrativeTestsReader.class);
+	readsNarrativeTestsFromGivenDirectory() {
 		
-		Scriptwriter writer = new Scriptwriter(narrativeTestsReader);
+		context.checking(new Expectations() {{ 
+			oneOf(scanner).readFrom("narrative-tests/"); will(returnValue(asList("test1", "test2")));
+			
+			ignoring(printer);
+		}});
 		
-		writer.generate("narrative-tests/");
+		Scriptwriter writer = new Scriptwriter(scanner, printer);
+		
+		writer.generate("narrative-tests/", "");
+		
+		context.assertIsSatisfied();
+	}
+	
+	@Test public void
+	writesScriptToGivenDirectory() {
+		
+		context.checking(new Expectations() {{  
+			oneOf(printer).writeTo("output/");
+			
+			ignoring(scanner);
+		}});
+		
+		Scriptwriter writer = new Scriptwriter(scanner, printer);
+		writer.generate("narrativ-tests", "output/");
 		
 		context.assertIsSatisfied();
 	}

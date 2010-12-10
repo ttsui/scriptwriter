@@ -6,13 +6,17 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 
 public class Scriptwriter {
-    public Scriptwriter(NarrativeTestsReader narrativeTestsReader) {
-		// TODO Auto-generated constructor stub
+    private final TestScanner scanner;
+	private final ScriptPrinter printer;
+
+	public Scriptwriter(TestScanner scanner, ScriptPrinter printer) {
+		this.scanner = scanner;
+		this.printer = printer;
 	}
 
-	public void generate(String string) {
-		// TODO Auto-generated method stub
-		
+	public void generate(String fromTestsLocatedHere, String andOutputScripsToHere) {
+		scanner.readFrom(fromTestsLocatedHere);
+		printer.writeTo(andOutputScripsToHere);
 	}
 
 	public static void main(String[] args) {
