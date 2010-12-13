@@ -9,7 +9,7 @@ import static java.util.Arrays.asList;
 public class ScriptwriterTest {
 	private final Mockery context = new Mockery();
 	
-	private TestScanner scanner = context.mock(TestScanner.class);
+	private Scanner scanner = context.mock(Scanner.class);
 	private ScriptPrinter printer = context.mock(ScriptPrinter.class);
 	
 	@Test public void

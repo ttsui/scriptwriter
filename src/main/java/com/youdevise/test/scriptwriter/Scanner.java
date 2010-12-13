@@ -2,7 +2,7 @@ package com.youdevise.test.scriptwriter;
 
 import java.util.Collection;
 
-public interface TestScanner {
+public interface Scanner {
 
 	Collection<String> readFrom(String pathToTests);
 

@@ -6,10 +6,10 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 
 public class Scriptwriter {
-    private final TestScanner scanner;
+    private final Scanner scanner;
 	private final ScriptPrinter printer;
 
-	public Scriptwriter(TestScanner scanner, ScriptPrinter printer) {
+	public Scriptwriter(Scanner scanner, ScriptPrinter printer) {
 		this.scanner = scanner;
 		this.printer = printer;
 	}
