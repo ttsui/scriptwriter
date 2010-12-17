@@ -9,5 +9,6 @@ public interface FileUtils {
 	public Iterator<File> iterateFiles(File directory, String[] extensions, boolean recursive);
 
 	public String readFileToString(File file) throws IOException;
-	
+
+    public void write(File file, String string);
 }

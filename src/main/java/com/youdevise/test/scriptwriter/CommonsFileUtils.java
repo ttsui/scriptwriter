@@ -15,4 +15,14 @@ public class CommonsFileUtils implements FileUtils {
 	public String readFileToString(File file) throws IOException {
 		return org.apache.commons.io.FileUtils.readFileToString(file);
 	}
+
+    @Override
+    public void write(File file, String content) {
+        try {
+            org.apache.commons.io.FileUtils.writeStringToFile(file, content);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

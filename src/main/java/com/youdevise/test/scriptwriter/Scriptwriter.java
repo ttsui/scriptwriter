@@ -1,33 +1,36 @@
 package com.youdevise.test.scriptwriter;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.Map.Entry;
 
-import org.apache.commons.io.FileUtils;
+
 
 public class Scriptwriter {
     private final Scanner scanner;
-	private final ScriptPrinter printer;
+	private final Printer printer;
 
-	public Scriptwriter(Scanner scanner, ScriptPrinter printer) {
+	public Scriptwriter(Scanner scanner, Printer printer) {
 		this.scanner = scanner;
 		this.printer = printer;
 	}
 
-	public void generate(String fromTestsLocatedHere, String andOutputScripsToHere) {
-		scanner.readFrom(fromTestsLocatedHere);
-		printer.writeTo(andOutputScripsToHere);
+	public void generate(String fromTestsLocatedHere, String andOutputScriptsToHere) {
+		printer.writeTo(andOutputScriptsToHere);
+		
+		for (Entry<String, String> test: scanner.readFrom(fromTestsLocatedHere).entrySet()) {
+			String name = test.getKey();
+			String content = test.getValue();
+			
+			printer.write(name.replace(".java", ".html"), "<html>" + content + "</html>");
+		}
 	}
 
 	public static void main(String[] args) {
-        File outputDir = new File(args[0], "output");
-        outputDir.mkdir();
-        
-        File output = new File(outputDir, "t.html");
-        try {
-            FileUtils.writeStringToFile(output, "Hello");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+		CommonsFileUtils fileUtils = new CommonsFileUtils();
+		Scanner scanner = new NarrativeTestScanner(fileUtils);
+		Printer printer = new ScriptPrinter(fileUtils);
+		
+		Scriptwriter scriptwriter = new Scriptwriter(scanner, printer);
+		
+		scriptwriter.generate(args[0], args[0] + "/output");
     }
 }

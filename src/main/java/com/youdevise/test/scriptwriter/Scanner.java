@@ -1,9 +1,9 @@
 package com.youdevise.test.scriptwriter;
 
-import java.util.Collection;
+import java.util.Map;
 
 public interface Scanner {
 
-	Collection<String> readFrom(String pathToTests);
+	Map<String, String> readFrom(String pathToTests);
 
 }

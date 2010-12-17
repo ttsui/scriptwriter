@@ -2,9 +2,9 @@ package com.youdevise.test.scriptwriter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class NarrativeTestScanner implements Scanner {
 
@@ -15,13 +15,14 @@ public class NarrativeTestScanner implements Scanner {
 	}
 
 	@Override
-	public Collection<String> readFrom(String pathToTests) {
-		Collection<String> contents = new ArrayList<String>();
+	public Map<String, String> readFrom(String pathToTests) {
+		Map<String, String> contents = new HashMap<String, String>();
 		
 		Iterator<File> tests = fileUtils.iterateFiles(new File(pathToTests), new String[] { "java" }, true);
 	
 		while (tests.hasNext()) {
-			contents.add(read(tests.next()));
+			File test = tests.next();
+			contents.put(test.getName(), read(test));
 		}
 		
 		return contents;

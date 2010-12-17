@@ -1,17 +1,16 @@
 package com.youdevise.test.scriptwriter;
 
+import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import java.io.File;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Test;
-
-import static java.util.Arrays.asList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsString;
 
 
 public class NarrativeTestScannerTest {
@@ -20,7 +19,7 @@ public class NarrativeTestScannerTest {
 	@Test public void
 	returnsContentOfTestsInGivenDirectory() throws Exception {
 		final FileUtils fileUtils = context.mock(FileUtils.class);
-		final File testFile = new File("");
+		final File testFile = new File("Test.java");
 		
 		context.checking(new Expectations() {{ 
 			Iterator<File> files = asList(testFile).iterator();
@@ -31,9 +30,9 @@ public class NarrativeTestScannerTest {
 		
 		NarrativeTestScanner scanner = new NarrativeTestScanner(fileUtils);
 		
-		Collection<String> contents = scanner.readFrom("tests/");
+		Map<String, String> contents = scanner.readFrom("tests/");
 	
-		assertThat(contents, contains(containsString("public class Test1")));
+		assertThat(contents.get("Test.java"), is("public class Test1"));
 		context.assertIsSatisfied();
 	}
 

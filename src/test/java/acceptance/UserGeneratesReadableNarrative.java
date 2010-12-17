@@ -1,4 +1,4 @@
-package com.youdevise.test.scriptwriter;
+package acceptance;
 
 import com.youdevise.test.narrative.Action;
 import com.youdevise.test.narrative.Actor;
@@ -6,6 +6,7 @@ import com.youdevise.test.narrative.Extractor;
 import com.youdevise.test.narrative.Given;
 import com.youdevise.test.narrative.Then;
 import com.youdevise.test.narrative.When;
+import com.youdevise.test.scriptwriter.Scriptwriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class UserGeneratesReadableNarrative {
          
          When.the(writer).attempts_to(write_a_script_based_on_the_tests());
          
-         Then.the(writer).expects_that(the_script())
+         Then.the(writer).expects_that(the_script_for("BasicArithmeticTest"))
                          .should_be(a_readable_form_of_the_narrative());
     }
     
@@ -50,7 +51,7 @@ public class UserGeneratesReadableNarrative {
         };
     }
 
-    private Extractor<String, ScriptwriterActor> the_script() {
+    private Extractor<String, ScriptwriterActor> the_script_for(final String narrativeTest) {
         return new Extractor<String, ScriptwriterActor>() {
             @Override
             public String grabFor(ScriptwriterActor writer) {
@@ -58,15 +59,11 @@ public class UserGeneratesReadableNarrative {
                    throw new RuntimeException("Output directory was not created.");
                 }
                 
-                File firstOutput = FileUtils.iterateFiles(writer.getOutputPath(), new String[] { "html" }, false).next();
-                
                 try {
-                    return FileUtils.readFileToString(firstOutput);
+                    return FileUtils.readFileToString(new File(writer.getOutputPath() + "/" + narrativeTest + ".html"));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                	throw new RuntimeException(e);
                 }
-                
-                return null;
             }
         }; 
     }
